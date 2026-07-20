@@ -1,0 +1,37 @@
+# ============================================================
+# .gitignore - Loại trừ các file không cần đưa lên Git
+# ============================================================
+
+# Maven build output
+target/
+*.jar
+*.war
+*.ear
+
+# Spring Boot DevTools restart file
+.spring-boot-devtools.properties
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.launch
+.settings/
+.classpath
+.project
+.factorypath
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Docker local files (không commit)
+docker-compose.override.yml
+.env
+
+# Log files
+*.log
+logs/
+
+# Test coverage reports (tạo tự động bởi Maven/IDE)
+# Uncommment nếu muốn include: #target/site/
