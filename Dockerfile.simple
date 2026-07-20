@@ -1,0 +1,13 @@
+# Dockerfile.simple
+# Phiên bản cơ bản (Single-stage) để học viên so sánh kích thước và độ phức tạp.
+# Yêu cầu: Phải chạy lệnh "mvn clean package" thành công ở máy chủ runner trước khi build docker.
+
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+
+# Sao chép file jar đã build sẵn
+COPY target/*.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
