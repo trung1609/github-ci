@@ -108,6 +108,7 @@ services:
       - GF_SERVER_ROOT_URL=https://trung-bi.duckdns.org/grafana/
       # Tắt yêu cầu đổi mật khẩu lần đầu (cho demo)
       - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
       # Timezone
       - GF_DATE_FORMATS_DEFAULT_TIMEZONE=Asia/Ho_Chi_Minh
     volumes:
