@@ -104,6 +104,8 @@ services:
       # Cấu hình admin mặc định
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_SERVER_DOMAIN=trung-bi.duckdns.org
+      - GF_SERVER_ROOT_URL=https://trung-bi.duckdns.org/grafana/
       # Tắt yêu cầu đổi mật khẩu lần đầu (cho demo)
       - GF_USERS_ALLOW_SIGN_UP=false
       # Timezone
