@@ -111,6 +111,10 @@ services:
       - GF_SERVER_SERVE_FROM_SUB_PATH=true
       # Timezone
       - GF_DATE_FORMATS_DEFAULT_TIMEZONE=Asia/Ho_Chi_Minh
+      - GF_SMTP_ENABLED=false
+      - GF_SMTP_HOST=smtp.example.com:587
+      - GF_SMTP_USER=trung8d2005@gmail.com
+      - GF_SMTP_PASSWORD=nimzcqzmgerfuzbt
     volumes:
       # Provisioning: tự động cấu hình datasource + dashboard khi khởi động
       - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
