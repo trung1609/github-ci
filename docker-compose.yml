@@ -1,0 +1,156 @@
+# ============================================================
+# docker-compose.yml
+# Dùng để chạy toàn bộ stack ứng dụng ở môi trường LOCAL DEV
+# Bao gồm: User Service + Prometheus + cAdvisor + Grafana
+# ============================================================
+
+services:
+  # -----------------------------------------------
+  # Service 1: User Service (Spring Boot App)
+  # -----------------------------------------------
+  user-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: user-service-app
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+      - JAVA_OPTS=-XX:+UseG1GC -XX:MaxRAMPercentage=75.0
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/api/v1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - backend-network
+
+  # -----------------------------------------------
+  # Service 2: Node Exporter (Host Metrics Collector)
+  # -----------------------------------------------
+  # Thu thập metrics CPU, RAM, Disk, Network của host machine
+  # Cung cấp dữ liệu cho Prometheus scrape
+  # Truy cập metrics: http://localhost:9100/metrics
+  # -----------------------------------------------
+  node-exporter:
+    image: prom/node-exporter:v1.8.1
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--path.rootfs=/rootfs"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
+    restart: unless-stopped
+    networks:
+      - backend-network
+
+
+  # -----------------------------------------------
+  # Service 3: Prometheus (Monitoring & Metrics)
+  # -----------------------------------------------
+  # Scrape metrics từ user-service và cAdvisor
+  # Truy cập UI: http://localhost:9090
+  # -----------------------------------------------
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    container_name: prometheus-server
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=15d"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--web.enable-lifecycle"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    depends_on:
+      user-service:
+        condition: service_healthy
+    networks:
+      - backend-network
+
+  # -----------------------------------------------
+# -----------------------------------------------
+  # Service 4: Grafana (Dashboard & Visualization)
+  # -----------------------------------------------
+  grafana:
+    image: grafana/grafana:11.1.0
+    container_name: grafana-server
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_DATE_FORMATS_DEFAULT_TIMEZONE=Asia/Ho_Chi_Minh
+
+      # Sub-path
+      - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s:%(http_port)s/grafana/
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+
+      # ===============================================
+      # Cấu hình SMTP gửi mail (Ví dụ dùng Gmail)
+      # ===============================================
+      - GF_SMTP_ENABLED=true
+      - GF_SMTP_HOST=smtp.gmail.com:587
+      - GF_SMTP_USER=baby10051999@gmail.com          # Email của bạn
+      - GF_SMTP_PASSWORD=ojmgagxmuxuddggz
+       # App Password (16 ký tự)
+      - GF_SMTP_FROM_ADDRESS=baby10051999@gmail.com # Email người gửi hiển thị
+      - GF_SMTP_FROM_NAME=Grafana Alert            # Tên người gửi hiển thị
+      - GF_SMTP_SKIP_VERIFY=false
+    volumes:
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/grafana/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    networks:
+      - backend-network
+
+# -----------------------------------------------
+# Networks: Mạng nội bộ riêng cho các services
+# -----------------------------------------------
+networks:
+  backend-network:
+    driver: bridge
+
+# -----------------------------------------------
+# Volumes: Lưu trữ persistent data
+# -----------------------------------------------
+volumes:
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+

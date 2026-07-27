@@ -1,0 +1,117 @@
+# =========================================================
+# prometheus.yml - Cấu hình Prometheus Server
+# =========================================================
+# Prometheus sẽ "pull" (scrape) metrics từ các service
+# theo định kỳ dựa trên cấu hình bên dưới.
+# =========================================================
+
+global:
+  # Khoảng thời gian giữa mỗi lần scrape metrics (mặc định 15s)
+  scrape_interval: 15s
+
+  # Khoảng thời gian giữa mỗi lần đánh giá rules (alerting/recording)
+  evaluation_interval: 15s
+
+  # Timeout cho mỗi lần scrape
+  scrape_timeout: 10s
+
+  # Labels chung sẽ được gắn vào tất cả metrics/alerts
+  external_labels:
+    environment: "local"
+    project: "devops-be105"
+
+# =========================================================
+# SCRAPE CONFIGS: Định nghĩa các target để thu thập metrics
+# =========================================================
+scrape_configs:
+
+  # ---------------------------------------------------------
+  # Job 1: Prometheus tự monitor chính nó
+  # ---------------------------------------------------------
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+        labels:
+          service: "prometheus"
+          team: "devops"
+
+  # ---------------------------------------------------------
+  # Job 2: User Service (Spring Boot + Micrometer)
+  # ---------------------------------------------------------
+  # Spring Boot Actuator expose metrics tại /actuator/prometheus
+  # Format: Prometheus text exposition format (OpenMetrics)
+  # ---------------------------------------------------------
+  - job_name: "user-service"
+    metrics_path: "/actuator/prometheus"
+    scrape_interval: 10s
+    static_configs:
+      - targets: ["user-service:8080"]
+        labels:
+          service: "user-service"
+          team: "backend"
+          version: "1.0.0"
+
+  # ---------------------------------------------------------
+  # Job 3: Node Exporter (Host System Metrics)
+  # ---------------------------------------------------------
+  # Thu thập metrics hệ thống của host:
+  # CPU, Memory/RAM, Disk, Network
+  # ---------------------------------------------------------
+  - job_name: "node-exporter"
+    scrape_interval: 10s
+    static_configs:
+      - targets: ["node-exporter:9100"]
+        labels:
+          service: "node-exporter"
+          team: "devops"
+
+
+
+# =========================================================
+# METRICS ĐƯỢC THU THẬP TỪ USER-SERVICE
+# =========================================================
+# Spring Boot Actuator + Micrometer tự động expose các metrics:
+#
+# ---- JVM Metrics ----
+# jvm_memory_used_bytes         : Bộ nhớ JVM đang sử dụng
+# jvm_memory_max_bytes          : Bộ nhớ JVM tối đa
+# jvm_memory_committed_bytes    : Bộ nhớ JVM đã commit
+# jvm_gc_pause_seconds          : Thời gian GC pause
+# jvm_gc_memory_promoted_bytes  : Bộ nhớ promoted sau GC
+# jvm_threads_states_threads    : Số threads theo trạng thái
+# jvm_threads_live_threads      : Số threads đang sống
+# jvm_classes_loaded_classes    : Số classes đã load
+#
+# ---- HTTP Server Metrics ----
+# http_server_requests_seconds_count  : Tổng số HTTP requests
+# http_server_requests_seconds_sum    : Tổng thời gian xử lý
+# http_server_requests_seconds_max    : Thời gian xử lý max
+# http_server_requests_seconds_bucket : Histogram buckets (latency)
+#   → Labels: method, uri, status, outcome
+#   → Ví dụ: http_server_requests_seconds_count{method="GET", uri="/api/v1/users", status="200"}
+#
+# ---- System Metrics ----
+# system_cpu_usage              : CPU usage của hệ thống
+# process_cpu_usage             : CPU usage của process Java
+# system_cpu_count              : Số CPU cores
+# process_uptime_seconds        : Uptime của process
+# process_start_time_seconds    : Thời điểm process khởi động
+#
+# ---- Tomcat / Server Metrics ----
+# tomcat_sessions_active_current_sessions : Số sessions đang active
+# tomcat_sessions_created_sessions_total  : Tổng sessions đã tạo
+#
+# ---- HikariCP Connection Pool ----
+# hikaricp_connections_active    : Connections đang active
+# hikaricp_connections_idle      : Connections idle
+# hikaricp_connections_pending   : Connections đang chờ
+# hikaricp_connections_max       : Max pool size
+# hikaricp_connections_min       : Min pool size
+#
+# ---- Spring Data / JPA ----
+# spring_data_repository_invocations_seconds : Thời gian gọi repository
+#
+# ---- Logback Metrics ----
+# logback_events_total           : Số log events theo level
+#   → Labels: level (error, warn, info, debug, trace)
+# =========================================================

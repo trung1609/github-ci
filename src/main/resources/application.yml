@@ -1,0 +1,70 @@
+spring:
+  application:
+    name: user-service
+  datasource:
+    url: jdbc:h2:mem:userdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+server:
+  port: 8080
+  error:
+    include-message: always
+
+app:
+  version: 1.0.0
+  description: User Management Microservice - Demo for CI/CD DevOps Course BE-105
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: true
+      sla:
+        http:
+          server:
+            requests: 50ms,100ms,200ms,500ms,1s
+    # Tag chung cho tất cả metrics
+    tags:
+      application: user-service
+
+logging:
+  level:
+    root: INFO
+    com.devops.demo.userservice: DEBUG
+  file:
+    name: logs/application.json.log
+  logback:
+    rollingpolicy:
+      max-file-size: 50MB
+      max-history: 30
+      file-name-pattern: logs/application-%d{yyyy-MM-dd}.%i.log.gz
+  pattern:
+    file: '{"@timestamp":"%d{ISO8601}","level":"%level","thread":"%t","logger":"%logger{36}","message":"%msg","traceId":"%X{traceId}"}%n'

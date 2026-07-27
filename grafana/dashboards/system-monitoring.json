@@ -1,0 +1,649 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "title": "📊 Tổng quan hệ thống (Node Exporter)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 50 },
+              { "color": "orange", "value": 70 },
+              { "color": "red", "value": 85 }
+            ]
+          },
+          "unit": "percent",
+          "min": 0,
+          "max": 100
+        }
+      },
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 1 },
+      "id": 1,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "title": "🖥️ CPU Usage (%)",
+      "type": "gauge",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "100 - (avg(rate(node_cpu_seconds_total{job=\"node-exporter\", mode=\"idle\"}[1m])) * 100)",
+          "legendFormat": "CPU Usage",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 60 },
+              { "color": "orange", "value": 75 },
+              { "color": "red", "value": 90 }
+            ]
+          },
+          "unit": "percent",
+          "min": 0,
+          "max": 100
+        }
+      },
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 1 },
+      "id": 2,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "title": "🧠 RAM Usage (%)",
+      "type": "gauge",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "(1 - (node_memory_MemAvailable_bytes{job=\"node-exporter\"} / node_memory_MemTotal_bytes{job=\"node-exporter\"})) * 100",
+          "legendFormat": "RAM Usage",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 60 },
+              { "color": "orange", "value": 75 },
+              { "color": "red", "value": 90 }
+            ]
+          },
+          "unit": "percent",
+          "min": 0,
+          "max": 100
+        }
+      },
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 1 },
+      "id": 3,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "title": "💾 Disk Usage (%)",
+      "type": "gauge",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "(1 - (node_filesystem_avail_bytes{job=\"node-exporter\", mountpoint=\"/\", fstype!=\"tmpfs\"} / node_filesystem_size_bytes{job=\"node-exporter\", mountpoint=\"/\", fstype!=\"tmpfs\"})) * 100",
+          "legendFormat": "Disk Usage",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue", "value": null }
+            ]
+          },
+          "unit": "bytes"
+        }
+      },
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 1 },
+      "id": 4,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value_and_name"
+      },
+      "title": "📋 RAM Total / Available",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "node_memory_MemTotal_bytes{job=\"node-exporter\"}",
+          "legendFormat": "Total RAM",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "node_memory_MemAvailable_bytes{job=\"node-exporter\"}",
+          "legendFormat": "Available",
+          "refId": "B"
+        }
+      ]
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 7 },
+      "id": 101,
+      "title": "🖥️ CPU Metrics (Chi tiết)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisLabel": "CPU %",
+            "fillOpacity": 20,
+            "lineWidth": 2,
+            "spanNulls": false,
+            "stacking": { "mode": "none" }
+          },
+          "unit": "percent"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "id": 10,
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "last"] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "title": "CPU Usage tổng hợp",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "100 - (avg(rate(node_cpu_seconds_total{job=\"node-exporter\", mode=\"idle\"}[1m])) * 100)",
+          "legendFormat": "Total CPU Usage",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "avg(rate(node_cpu_seconds_total{job=\"node-exporter\", mode=\"user\"}[1m])) * 100",
+          "legendFormat": "User",
+          "refId": "B"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "avg(rate(node_cpu_seconds_total{job=\"node-exporter\", mode=\"system\"}[1m])) * 100",
+          "legendFormat": "System",
+          "refId": "C"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "avg(rate(node_cpu_seconds_total{job=\"node-exporter\", mode=\"iowait\"}[1m])) * 100",
+          "legendFormat": "IO Wait",
+          "refId": "D"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisLabel": "CPU %",
+            "fillOpacity": 20,
+            "lineWidth": 2,
+            "spanNulls": false,
+            "stacking": { "mode": "normal" }
+          },
+          "unit": "percent"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "id": 11,
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "last"] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "title": "CPU Usage per Core (Stacked)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "100 - (rate(node_cpu_seconds_total{job=\"node-exporter\", mode=\"idle\"}[1m]) * 100)",
+          "legendFormat": "CPU Core {{cpu}}",
+          "refId": "A"
+        }
+      ]
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 16 },
+      "id": 102,
+      "title": "🧠 Memory / RAM Metrics (Chi tiết)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisLabel": "",
+            "fillOpacity": 30,
+            "lineWidth": 2,
+            "spanNulls": false,
+            "stacking": { "mode": "none" }
+          },
+          "unit": "bytes"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 17 },
+      "id": 20,
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "last"] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "title": "RAM Usage (Total / Used / Available / Cached)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "node_memory_MemTotal_bytes{job=\"node-exporter\"}",
+          "legendFormat": "Total",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "node_memory_MemTotal_bytes{job=\"node-exporter\"} - node_memory_MemAvailable_bytes{job=\"node-exporter\"}",
+          "legendFormat": "Used",
+          "refId": "B"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "node_memory_MemAvailable_bytes{job=\"node-exporter\"}",
+          "legendFormat": "Available",
+          "refId": "C"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "node_memory_Cached_bytes{job=\"node-exporter\"}",
+          "legendFormat": "Cached",
+          "refId": "D"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisLabel": "",
+            "fillOpacity": 20,
+            "lineWidth": 2,
+            "spanNulls": false,
+            "stacking": { "mode": "none" }
+          },
+          "unit": "bytes"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 17 },
+      "id": 21,
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "last"] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "title": "JVM Memory (User Service - Heap / Non-Heap)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "jvm_memory_used_bytes{job=\"user-service\", area=\"heap\"}",
+          "legendFormat": "Heap - {{id}}",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "jvm_memory_used_bytes{job=\"user-service\", area=\"nonheap\"}",
+          "legendFormat": "Non-Heap - {{id}}",
+          "refId": "B"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "jvm_memory_max_bytes{job=\"user-service\", area=\"heap\", id!=\"\"}",
+          "legendFormat": "Heap Max",
+          "refId": "C"
+        }
+      ]
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 25 },
+      "id": 103,
+      "title": "💾 Disk Metrics (Chi tiết)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisLabel": "",
+            "fillOpacity": 20,
+            "lineWidth": 2,
+            "spanNulls": false,
+            "stacking": { "mode": "none" }
+          },
+          "unit": "bytes"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 26 },
+      "id": 30,
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "last"] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "title": "Disk Space (Size / Used / Available)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "node_filesystem_size_bytes{job=\"node-exporter\", fstype!~\"tmpfs|overlay\", mountpoint=~\"/.*\"}",
+          "legendFormat": "{{mountpoint}} - Total",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "node_filesystem_size_bytes{job=\"node-exporter\", fstype!~\"tmpfs|overlay\", mountpoint=~\"/.*\"} - node_filesystem_avail_bytes{job=\"node-exporter\", fstype!~\"tmpfs|overlay\", mountpoint=~\"/.*\"}",
+          "legendFormat": "{{mountpoint}} - Used",
+          "refId": "B"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "node_filesystem_avail_bytes{job=\"node-exporter\", fstype!~\"tmpfs|overlay\", mountpoint=~\"/.*\"}",
+          "legendFormat": "{{mountpoint}} - Available",
+          "refId": "C"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisLabel": "",
+            "fillOpacity": 20,
+            "lineWidth": 2,
+            "spanNulls": false,
+            "stacking": { "mode": "none" }
+          },
+          "unit": "Bps"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 26 },
+      "id": 31,
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "last"] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "title": "Disk I/O (Read / Write Bytes/s)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "rate(node_disk_read_bytes_total{job=\"node-exporter\"}[1m])",
+          "legendFormat": "{{device}} - Read",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "rate(node_disk_written_bytes_total{job=\"node-exporter\"}[1m])",
+          "legendFormat": "{{device}} - Write",
+          "refId": "B"
+        }
+      ]
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 34 },
+      "id": 104,
+      "title": "🌐 Network Metrics (Chi tiết)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisLabel": "",
+            "fillOpacity": 25,
+            "lineWidth": 2,
+            "spanNulls": false,
+            "stacking": { "mode": "none" }
+          },
+          "unit": "Bps"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 35 },
+      "id": 40,
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "last"] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "title": "Network Traffic - Received (Bytes/s)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "rate(node_network_receive_bytes_total{job=\"node-exporter\", device!~\"lo|veth.*|br-.*|docker.*\"}[1m])",
+          "legendFormat": "{{device}} - RX",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisLabel": "",
+            "fillOpacity": 25,
+            "lineWidth": 2,
+            "spanNulls": false,
+            "stacking": { "mode": "none" }
+          },
+          "unit": "Bps"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 35 },
+      "id": 41,
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "last"] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "title": "Network Traffic - Transmitted (Bytes/s)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "rate(node_network_transmit_bytes_total{job=\"node-exporter\", device!~\"lo|veth.*|br-.*|docker.*\"}[1m])",
+          "legendFormat": "{{device}} - TX",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisLabel": "",
+            "fillOpacity": 10,
+            "lineWidth": 2,
+            "spanNulls": false,
+            "stacking": { "mode": "none" }
+          },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 43 },
+      "id": 42,
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "last"] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "title": "Network Errors (RX / TX)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "rate(node_network_receive_errs_total{job=\"node-exporter\", device!~\"lo|veth.*|br-.*|docker.*\"}[1m])",
+          "legendFormat": "{{device}} - RX Errors",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "rate(node_network_transmit_errs_total{job=\"node-exporter\", device!~\"lo|veth.*|br-.*|docker.*\"}[1m])",
+          "legendFormat": "{{device}} - TX Errors",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisLabel": "",
+            "fillOpacity": 10,
+            "lineWidth": 2,
+            "spanNulls": false,
+            "stacking": { "mode": "none" }
+          },
+          "unit": "pps"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 43 },
+      "id": 43,
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "last"] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "title": "Network Packets (Drop Rate)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "rate(node_network_receive_drop_total{job=\"node-exporter\", device!~\"lo|veth.*|br-.*|docker.*\"}[1m])",
+          "legendFormat": "{{device}} - RX Dropped",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "rate(node_network_transmit_drop_total{job=\"node-exporter\", device!~\"lo|veth.*|br-.*|docker.*\"}[1m])",
+          "legendFormat": "{{device}} - TX Dropped",
+          "refId": "B"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["devops", "monitoring", "node-exporter", "be-105"],
+  "templating": {
+    "list": [
+      {
+        "current": { "selected": false, "text": "Prometheus", "value": "Prometheus" },
+        "hide": 0,
+        "includeAll": false,
+        "name": "DS_PROMETHEUS",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "type": "datasource"
+      }
+    ]
+  },
+  "time": { "from": "now-30m", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "DevOps System Monitoring - CPU / RAM / Disk / Network",
+  "uid": "devops-system-monitoring",
+  "version": 2
+}
