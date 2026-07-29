@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
-@RequestMapping("/pay")
+@RequestMapping("/api/v1/pay")
 public class PaymentController {
 
     @GetMapping("/process")
