@@ -25,6 +25,10 @@ server:
   port: 8080
   error:
     include-message: always
+  tomcat:
+    remoteip:
+      remote-ip-header: X-Forwarded-For
+      protocol-header: X-Forwarded-Proto
 
 app:
   version: 1.0.0
