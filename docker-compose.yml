@@ -5,6 +5,22 @@
 # ============================================================
 
 services:
+  loki:
+    image: grafana/loki:2.9.0
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - backend-network
+
+  promtail:
+    image: grafana/promtail:2.9.0
+    volumes:
+      - ./logs:/var/log/spring-app # Mount thư mục log của Spring Boot vào Promtail
+      - ./promtail-config.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - backend-network
   # -----------------------------------------------
   # Service 1: User Service (Spring Boot App)
   # -----------------------------------------------
@@ -143,6 +159,8 @@ services:
 # -----------------------------------------------
 networks:
   backend-network:
+    driver: bridge
+  loki:
     driver: bridge
 
 # -----------------------------------------------
