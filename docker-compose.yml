@@ -8,7 +8,7 @@ services:
   loki:
     image: grafana/loki:2.9.0
     ports:
-      - "127.0.0.1:3100:3100"
+      - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
     networks:
       - backend-network
@@ -30,10 +30,10 @@ services:
       dockerfile: Dockerfile
     container_name: user-service-app
     ports:
-      - "127.0.0.1:8080:8080"
+      - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=local
-      - JAVA_OPTS=-XX:+UseG1GC -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom
+      - JAVA_OPTS=-XX:+UseG1GC -XX:MaxRAMPercentage=75.0
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:8080/api/v1/health"]
       interval: 30s
@@ -57,7 +57,7 @@ services:
     image: prom/node-exporter:v1.8.1
     container_name: node-exporter
     ports:
-      - "127.0.0.1:9100:9100"
+      - "9100:9100"
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -82,7 +82,7 @@ services:
     image: prom/prometheus:v2.53.0
     container_name: prometheus-server
     ports:
-      - "127.0.0.1:9090:9090"
+      - "9090:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
@@ -114,7 +114,7 @@ services:
     image: grafana/grafana:11.1.0
     container_name: grafana-server
     ports:
-      - "127.0.0.1:3000:3000"
+      - "3000:3000"
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin123
